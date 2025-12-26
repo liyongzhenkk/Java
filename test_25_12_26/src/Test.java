@@ -14,6 +14,10 @@ public class Test {
             }
             i++;
         }
+
+        for (int j = 0; j < ; j++) {
+            
+        }
 //        int i = 1;
 //        while(i < 10) {
 //            main2();
