@@ -1,11 +1,26 @@
 import com.sun.xml.internal.bind.v2.runtime.output.StAXExStreamWriterOutput;
 
+import java.util.Random;
+import java.util.Scanner;
+
+
+
 public class Test {
-    public static void main2() {
-        System.out.println("++++++++++++++++++++");
+
+
+    static void main(String[] args) {
+        Random rand = new Random();
     }
 
-    public static void main(String[] args) {
+    public static void main4(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String str = scanner.nextLine();
+        System.out.println(str);
+
+    }
+
+
+    public static void main3(String[] args) {
         
         int i = 10;
         while (i < 100) {
@@ -15,9 +30,7 @@ public class Test {
             i++;
         }
 
-        for (int j = 0; j < ; j++) {
-            
-        }
+
 //        int i = 1;
 //        while(i < 10) {
 //            main2();
