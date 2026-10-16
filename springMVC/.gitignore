@@ -1,0 +1,19 @@
+# Build output and logs
+target/
+out/
+*.class
+*.log
+
+# IDE and operating system files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.DS_Store
+
+# Local credentials; keep these outside src/main/resources
+/application-local.properties
+.env
+.env.*
+!.env.example

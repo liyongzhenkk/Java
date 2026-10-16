@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cookie 与重定向实验</title>
+    <style>
+        body { max-width: 760px; margin: 60px auto; padding: 0 20px; font-family: system-ui, sans-serif; color: #243047; background: #f6f8fb; line-height: 1.7; }
+        main { padding: 28px; background: white; border: 1px solid #dce2eb; border-radius: 12px; }
+        h1 { margin-top: 0; font-size: 26px; }
+        label { display: block; margin-bottom: 8px; }
+        input, button { padding: 10px 14px; font: inherit; border: 1px solid #adb8c8; border-radius: 6px; }
+        input { max-width: 100%; box-sizing: border-box; }
+        button { background: #245ac5; color: white; border-color: #245ac5; cursor: pointer; margin-top: 8px; }
+        .result { padding: 14px; background: #f0f4fb; border-radius: 6px; overflow-wrap: anywhere; }
+        code { color: #245ac5; }
+        .hint { color: #59677d; font-size: 14px; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Cookie 与重定向实验</h1>
+    <p>输入名字 → 后端写入 Cookie → 302 重定向回本页 → 读取并显示。</p>
+    <!-- 相对地址也兼容配置了 context-path 的应用。 -->
+    <form action="cookie/set" method="get">
+        <label for="username">保存到 Cookie 的名字（支持中文）</label>
+        <input id="username" name="username" value="zhangsan" maxlength="100" required>
+        <button type="submit">设置 Cookie 并重定向</button>
+    </form>
+
+    <h2>浏览器直接读取</h2>
+    <p class="hint">JavaScript 使用 <code>document.cookie</code> 读取并解码。</p>
+    <p class="result" id="browser-value">读取中…</p>
+
+    <h2>后端读取后返回</h2>
+    <p class="hint">页面请求 <code>cookie/read</code>，浏览器自动带上 Cookie；后端通过 <code>request.getCookies()</code> 读取。</p>
+    <p class="result" id="server-value" aria-live="polite">读取中…</p>
+    <button type="button" id="refresh">重新读取</button>
+    <p class="hint">测试 Cookie 名为 demo_username，有效期 10 分钟。请通过 Spring Boot 的 HTTP 地址打开此页面。</p>
+    <p class="hint">本例允许 JavaScript 读取 Cookie。把 Controller 中的 HttpOnly 改为 true 后，浏览器直接读取区将找不到它，后端仍然能读取。</p>
+</main>
+<script>
+    async function readCookie() {
+        const item = document.cookie.split('; ').find(value => value.startsWith('demo_username='));
+        const browserValue = document.getElementById('browser-value');
+        try {
+            // Java 的 URLEncoder 把空格编码成 +，这里先还原，再解码中文等字符。
+            browserValue.textContent = item
+                ? decodeURIComponent(item.substring('demo_username='.length).replace(/\+/g, ' '))
+                : '尚未找到可由 JavaScript 读取的 demo_username。';
+        } catch (error) {
+            browserValue.textContent = 'Cookie 编码无效，请重新设置。';
+        }
+
+        const serverValue = document.getElementById('server-value');
+        try {
+            const response = await fetch('cookie/read', {credentials: 'same-origin', cache: 'no-store'});
+            const text = await response.text();
+            serverValue.textContent = response.ok ? text : `读取失败（${response.status}）：${text}`;
+        } catch (error) {
+            serverValue.textContent = '请求失败，请确认 Spring Boot 应用正在运行。';
+        }
+    }
+
+    document.getElementById('refresh').addEventListener('click', readCookie);
+    readCookie();
+</script>
+</body>
+</html>
