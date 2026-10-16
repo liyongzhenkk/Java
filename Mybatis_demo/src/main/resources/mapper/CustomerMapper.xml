@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace：绑定对应的Mapper接口全类名，实现接口与XML的关联 -->
+<mapper namespace="com.lyzstack.mybatis_demo.mapper.CustomerMapper">
+
+    <resultMap id="customerResultMap" type="com.lyzstack.mybatis_demo.entities.Customer">
+        <id column="customer_id" property="customerId"></id>
+        <result column="customer_name" property="customerName"></result>
+
+        <collection property="orderList" ofType="com.lyzstack.mybatis_demo.entities.Order">
+            <id column="order_id" property="orderId"></id>
+            <result column="order_name" property="orderName"></result>
+        </collection>
+    </resultMap>
+
+    <select id="selectCustomerWithOrderList" resultMap="customerResultMap">
+        SELECT c.customer_id, c.customer_name, o.order_id, o.order_name
+        FROM t_customer c
+                 LEFT JOIN t_order o
+                           ON c.customer_id = o.customer_id
+        WHERE c.customer_id = #{customerId}
+    </select>
+</mapper>
